@@ -19,8 +19,6 @@ orders_repository = SQLOrdersRepository(db_connection)
 order_products_repository = SQLOrderProductsRepository(db_connection)
 
 
-
-
 # Rutas para órdenes
 @orders_bp.route('/create', methods=['POST'])
 def create_order():
@@ -59,7 +57,7 @@ def list_orders():
 
 
 # Rutas para productos de órdenes
-@order_products_bp.route('/order-products', methods=['POST'])
+@order_products_bp.route('/create', methods=['POST'])
 def create_order_product():
     data = request.get_json()
     orden_id = data.get('orden_id')
@@ -73,19 +71,17 @@ def create_order_product():
     created_order_product = order_products_repository.create_order_product(orden_id, producto_id, precio, cantidad)
     return jsonify({'order_product_id': created_order_product}), 201
 
-@order_products_bp.route('/order-products/<int:product_id>', methods=['DELETE'])
-def delete_order_product_by_id(product_id):
+
+@order_products_bp.route('/delete/<int:product_id>', methods=['DELETE'])
+def delete_order_product(product_id):
     order_products_repository.delete_order_product(product_id)
     return jsonify({'message': 'Order product deleted'})
 
-@order_products_bp.route('/order-products/<int:order_id>', methods=['PUT'])
-def update_order_product_status(order_id):
-    data = request.json
-    updated_order_product = order_products_repository.update_order_product(order_id, data['status'])
-    return jsonify(updated_order_product.__dict__)
 
-@order_products_bp.route('/order-products', methods=['GET'])
-def list_order_products():
-    order_products = order_products_repository.list_order_products()
-    return jsonify([order_product.__dict__ for order_product in order_products])
+# listar todos los productos de las ordenes
+@order_products_bp.route('/get_all', methods=['GET'])
+def get_all_order_products():
+    order_products = order_products_repository.get_all_order_products()
+    return jsonify(order_products)
+
 
